@@ -42,9 +42,11 @@ func getConfig() *embed.Config {
 	flag.StringVar(&cfg.WalDir, "wal-dir", cfg.WalDir, "Path to the dedicated wal directory.")
 
 	var lcurls string
-	flag.StringVar(&lcurls, "advertise-client-urls", "http://localhost:12379", "server address to advertise, separated by dots")
+	flag.StringVar(&lcurls, "listen-client-urls", "http://localhost:2379", "List of URLs to listen on for client traffic.")
 	var lpurls string
-	flag.StringVar(&lpurls, "listen-peer-urls", "http://localhost:12380", "listen peer address to advertise, separated by dots")
+	flag.StringVar(&lpurls, "listen-peer-urls", "http://localhost:2380", "listen peer address to advertise, separated by dots")
+	var apurls string
+	flag.StringVar(&apurls, "initial-advertise-peer-urls", "http://localhost:2380", "List of this member's peer URLs to advertise to the rest of the cluster")
 
 	flag.UintVar(&cfg.MaxSnapFiles, "max-snapshots", cfg.MaxSnapFiles, "Maximum number of snapshot files to retain (0 is unlimited).")
 	flag.UintVar(&cfg.MaxWalFiles, "max-wals", cfg.MaxWalFiles, "Maximum number of wal files to retain (0 is unlimited).")
@@ -64,12 +66,11 @@ func getConfig() *embed.Config {
 
 	flag.StringVar(&cfg.Dproxy, "discovery-proxy", cfg.Dproxy, "HTTP proxy to use for traffic to discovery service.")
 	flag.StringVar(&cfg.DNSCluster, "discovery-srv", cfg.DNSCluster, "DNS domain used to bootstrap initial cluster.")
-	flag.StringVar(&cfg.ClusterState, "nitial-cluster-state", cfg.ClusterState, "Initial cluster state ('new' or 'existing').")
+	flag.StringVar(&cfg.ClusterState, "initial-cluster-state", cfg.ClusterState, "Initial cluster state ('new' or 'existing').")
 	flag.StringVar(&cfg.InitialCluster, "initial-cluster", cfg.InitialCluster, "Initial cluster configuration for bootstrapping.")
 	flag.StringVar(&cfg.InitialClusterToken, "initial-cluster-token", cfg.InitialClusterToken, "Initial cluster token for the etcd cluster during bootstrap.")
 
 	flag.BoolVar(&cfg.StrictReconfigCheck, "strict-reconfig-check", cfg.StrictReconfigCheck, "Reject reconfiguration requests that would cause quorum loss.")
-
 
 	flag.BoolVar(&cfg.EnableV2, "enable-v2", cfg.EnableV2, "Accept etcd V2 client requests. Deprecated in v3.5. Will be decommission in v3.6.")
 	flag.StringVar(&cfg.ExperimentalEnableV2V3, "experimental-enable-v2v3", cfg.ExperimentalEnableV2V3, "v3 prefix for serving emulated v2 state. Deprecated in 3.5. Will be decomissioned in 3.6.")
@@ -97,11 +98,13 @@ func getConfig() *embed.Config {
 	flag.Parse()
 
 	u, _ := url.Parse(lcurls)
-	cfg.LCUrls = []url.URL { *u }
+	cfg.LCUrls = []url.URL{*u}
 
 	lpu, _ := url.Parse(lpurls)
-	cfg.LPUrls = []url.URL { *lpu }
+	cfg.LPUrls = []url.URL{*lpu}
 
+	apu, _ := url.Parse(apurls)
+	cfg.APUrls = []url.URL{*apu}
 	fmt.Printf("%v \n", cfg)
 	return cfg
 }
