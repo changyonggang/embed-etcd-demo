@@ -13,10 +13,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/etcd-io/etcd/embed"
 	"log"
 	"net/url"
 	"time"
+
+	"go.etcd.io/etcd/embed"
 )
 
 func main() {
@@ -51,7 +52,7 @@ func getConfig() *embed.Config {
 	flag.UintVar(&cfg.MaxSnapFiles, "max-snapshots", cfg.MaxSnapFiles, "Maximum number of snapshot files to retain (0 is unlimited).")
 	flag.UintVar(&cfg.MaxWalFiles, "max-wals", cfg.MaxWalFiles, "Maximum number of wal files to retain (0 is unlimited).")
 	flag.StringVar(&cfg.Name, "name", cfg.Name, "Human-readable name for this member.")
-	flag.Uint64Var(&cfg.SnapCount, "snapshot-count", cfg.SnapCount, "Number of committed transactions to trigger a snapshot to disk.")
+	// flag.Uint64Var(&cfg.SnapCount, "snapshot-count", cfg.SnapCount, "Number of committed transactions to trigger a snapshot to disk.")
 	flag.UintVar(&cfg.TickMs, "heartbeat-interval", cfg.TickMs, "Time (in milliseconds) of a heartbeat interval.")
 	flag.UintVar(&cfg.ElectionMs, "election-timeout", cfg.ElectionMs, "Time (in milliseconds) for an election to timeout.")
 	flag.BoolVar(&cfg.InitialElectionTickAdvance, "initial-election-tick-advance", cfg.InitialElectionTickAdvance, "Whether to fast-forward initial election ticks on boot for faster election.")
